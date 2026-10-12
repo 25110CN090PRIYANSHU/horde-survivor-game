@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NEON HORDE: SURVIVORS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- In-Game HUD -->
+        <div id="hud" class="hud-overlay hidden">
+            <!-- Top Bar: XP, Time, Kills, Audio -->
+            <div class="hud-top">
+                <div class="xp-container">
+                    <div class="level-badge" id="hudLevelBadge">LV 1</div>
+                    <div class="xp-bar-wrapper">
+                        <div class="xp-bar-fill" id="hudXpFill"></div>
+                        <div class="xp-text" id="hudXpText">0 / 10 XP</div>
+                    </div>
+                </div>
+
+                <div class="hud-metrics">
+                    <div class="metric-card timer">
+                        <span class="metric-icon">⏱</span>
+                        <span id="hudTimer">00:00</span>
+                    </div>
+                    <div class="metric-card kills">
+                        <span class="metric-icon">☠</span>
+                        <span id="hudKills">0</span>
+                    </div>
+                    <div class="metric-card score">
+                        <span class="metric-icon">💎</span>
+                        <span id="hudScore">0</span>
+                    </div>
+                </div>
+
+                <div class="hud-controls">
+                    <button id="btnAudioToggle" class="hud-btn" title="Toggle Sound / Music">🔊</button>
+                    <button id="btnPauseToggle" class="hud-btn" title="Pause Game">⏸</button>
+                </div>
+            </div>
+
+            <!-- Bottom Left: Health, Dash, Weapon Inventory Rack -->
+            <div class="hud-bottom-left">
+                <div class="hp-container">
+                    <div class="hp-bar-wrapper">
+                        <div class="hp-bar-fill" id="hudHpFill"></div>
+                        <div class="hp-text" id="hudHpText">100 / 100 HP</div>
+                    </div>
+                    <div class="dash-indicator" id="hudDashIndicator">
+                        <div class="dash-fill" id="hudDashFill"></div>
+                        <span class="dash-label">DASH</span>
+                    </div>
+                </div>
+
+                <div class="inventory-bar" id="hudInventory">
+                    <!-- Populated dynamically with active weapon icons -->
+                </div>
+            </div>
+
+            <!-- Controls Reminder -->
+            <div class="hud-bottom-right">
+                <span class="ctrl-hint"><kbd>WASD</kbd> or <kbd>Arrows</kbd> Move • <kbd>Space</kbd> Dash • Auto-Attack</span>
+            </div>
+        </div>
+
+        <!-- Boss Warning Banner -->
+        <div id="bossBanner" class="boss-banner hidden">
+            ⚠️ WARNING: APEX THREAT DETECTED ⚠️
+        </div>
+
+        <!-- Screen Modals -->
+
+        <!-- 1. Start Screen -->
+        <div id="startScreen" class="modal-screen active">
+            <div class="title-card">
+                <div class="glow-tag">ROGUE-LITE SURVIVOR</div>
+                <h1 class="game-title">NEON HORDE</h1>
+                <h2 class="game-subtitle">SURVIVORS</h2>
+                <p class="tagline">Overcome infinite waves of cyber-abominations, collect radiant energy, and synthesize devastating weapon synergies.</p>
+
+                <div class="records-panel">
+                    <div class="record-item">
+                        <span class="lbl">BEST SURVIVAL</span>
+                        <span class="val" id="bestTime">00:00</span>
+                    </div>
+                    <div class="record-item">
+                        <span class="lbl">HIGHEST SCORE</span>
+                        <span class="val" id="bestScore">0</span>
+                    </div>
+                    <div class="record-item">
+                        <span class="lbl">MOST KILLS</span>
+                        <span class="val" id="bestKills">0</span>
+                    </div>
+                </div>
+
+                <div class="class-picker">
+                    <div class="picker-label">CHOOSE OPERATIVE:</div>
+                    <div class="classes-grid">
+                        <div class="class-card selected" data-class="cyber-mage">
+                            <div class="class-icon">⚡</div>
+                            <div class="class-name">Cyber Mage</div>
+                            <div class="class-desc">Starts with <b>Plasma Wand</b>. High ability projectile speed.</div>
+                        </div>
+                        <div class="class-card" data-class="blade-dancer">
+                            <div class="class-icon">⚔️</div>
+                            <div class="class-name">Blade Dancer</div>
+                            <div class="class-desc">Starts with <b>Orbital Glaive</b>. Higher move speed & dash cooldown.</div>
+                        </div>
+                        <div class="class-card" data-class="pyro-grenadier">
+                            <div class="class-icon">🔥</div>
+                            <div class="class-name">Pyro Grenadier</div>
+                            <div class="class-desc">Starts with <b>Plasma Bomb</b>. Larger explosion radius & max HP.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btnStartGame" class="btn-primary pulse-btn">ENTER THE ARENA</button>
+
+                <div class="controls-guide">
+                    <div><b>Move:</b> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or <kbd>Arrow Keys</kbd> (or Mouse Drag)</div>
+                    <div><b>Dash / Dodge:</b> <kbd>Space</kbd> or <kbd>Shift</kbd></div>
+                    <div><b>Aim & Attack:</b> Autonomous targeting</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Level Up Modal -->
+        <div id="levelUpModal" class="modal-screen hidden">
+            <div class="upgrade-modal-card">
+                <div class="modal-header">
+                    <span class="level-indicator" id="lvlUpHeader">LEVEL REACHED!</span>
+                    <h2>SYNTHESIZE UPGRADE</h2>
+                    <p>Select a core upgrade or synergistic module</p>
+                </div>
+
+                <div class="upgrades-grid" id="upgradesGrid">
+                    <!-- Populated dynamically with upgrade choices -->
+                </div>
+
+                <div class="modal-footer">
+                    <button id="btnReroll" class="btn-secondary">🎲 REROLL (1 LEFT)</button>
+                    <button id="btnSkipUpgrade" class="btn-secondary">SKIP & HEAL 20 HP</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Pause Modal -->
+        <div id="pauseModal" class="modal-screen hidden">
+            <div class="modal-card">
+                <h2>TACTICAL PAUSE</h2>
+                <div class="stats-overview" id="pauseStats">
+                    <!-- Dynamically filled with player attributes -->
+                </div>
+                <div class="modal-actions">
+                    <button id="btnResume" class="btn-primary">RESUME OPERATION</button>
+                    <button id="btnRestartFromPause" class="btn-secondary">ABORT & RESTART</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Game Over Modal -->
+        <div id="gameOverModal" class="modal-screen hidden">
+            <div class="gameover-card">
+                <div class="skull-badge">💀</div>
+                <h1 class="gameover-title" id="gameOverTitle">SIGNAL LOST</h1>
+                <p class="gameover-sub" id="gameOverSub">Your operative was overwhelmed by the horde.</p>
+
+                <div class="run-stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-lbl">TIME SURVIVED</span>
+                        <span class="stat-val highlight" id="statTime">00:00</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-lbl">FINAL LEVEL</span>
+                        <span class="stat-val" id="statLevel">Lv. 1</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-lbl">ENEMIES SLAIN</span>
+                        <span class="stat-val" id="statKills">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-lbl">TOTAL DAMAGE</span>
+                        <span class="stat-val" id="statDamage">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-lbl">ENERGY GEMS</span>
+                        <span class="stat-val" id="statGems">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-lbl">SCORE</span>
+                        <span class="stat-val highlight" id="statScore">0</span>
+                    </div>
+                </div>
+
+                <div id="newRecordBadge" class="new-record-badge hidden">🏆 NEW RECORD ACHIEVED!</div>
+
+                <button id="btnPlayAgain" class="btn-primary pulse-btn">INITIATE NEW PROTOCOL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
