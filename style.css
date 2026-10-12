@@ -355,8 +355,10 @@ kbd {
 }
 
 @keyframes flashAlert {
-    from { opacity: 0.5; transform: translateX(-50%) scale(0.98); }
-    to { opacity: 1; transform: translateX(-50%) scale(1.02); }
+    /* This badge is in normal document flow, so do not translate it.
+       translateX(-50%) incorrectly pushed it outside the game-over card. */
+    from { opacity: 0.65; transform: scale(0.99); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 /* --- Modals --- */
@@ -970,4 +972,34 @@ button, .class-card {
     .record-item { padding: 4px 8px; }
     .class-card { padding: 6px; }
     .class-desc { display: none; }
+}
+
+
+/* Game-over layout fix: keep the record banner and restart button inside the card. */
+.gameover-card {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.new-record-badge {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    line-height: 1.35;
+    text-align: center;
+    white-space: normal;
+    animation: flashAlert 0.7s infinite alternate;
+}
+#btnPlayAgain {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+}
+@media (max-width: 520px) {
+    .gameover-card { padding: 20px 14px; }
+    .new-record-badge { padding: 8px 10px; font-size: clamp(0.68rem, 3vw, 0.9rem); letter-spacing: 0.2px; }
+    #btnPlayAgain { font-size: clamp(0.72rem, 3.4vw, 0.95rem); letter-spacing: 0.5px; padding: 13px 8px; }
 }
