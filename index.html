@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>NEON HORDE: SURVIVORS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,16 @@
 </head>
 <body>
     <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
+        <canvas id="gameCanvas" aria-label="Neon Horde game arena"></canvas>
+
+        <!-- Touch controls: shown only on touch/mobile devices -->
+        <div id="mobileControls" class="mobile-controls" aria-label="Touch game controls">
+            <div id="mobileJoystick" class="mobile-joystick" role="application" aria-label="Virtual joystick; drag to move">
+                <div class="joystick-ring"><div id="joystickKnob" class="joystick-knob"></div></div>
+                <span class="touch-control-label">MOVE</span>
+            </div>
+            <button id="mobileDash" class="mobile-dash" type="button" aria-label="Dash">⚡<span>DASH</span></button>
+        </div>
 
         <!-- In-Game HUD -->
         <div id="hud" class="hud-overlay hidden">

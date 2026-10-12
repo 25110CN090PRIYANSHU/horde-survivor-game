@@ -2,7 +2,7 @@
 
 An action-packed, fully featured top-down horde survival rogue-lite browser game built with **pure HTML5 Canvas, JavaScript, CSS3**, and the **Web Audio API**.
 
-Zero external audio files or third-party runtime dependencies required. Runs directly in any modern web browser.
+Zero external audio files or third-party runtime dependencies required. Runs directly in any modern web browser, with responsive layouts for laptop, tablet and mobile screens.
 
 ---
 
@@ -23,8 +23,8 @@ Zero external audio files or third-party runtime dependencies required. Runs dir
 
 | Action | Keyboard / Mouse |
 | :--- | :--- |
-| **Move Operative** | <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or <kbd>Arrow Keys</kbd> (or click/drag mouse) |
-| **Dash / Dodge** | <kbd>Space</kbd> or <kbd>Shift</kbd> (invulnerability frames during dash) |
+| **Move Operative** | Phone/tablet: drag the virtual joystick. Laptop: <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or <kbd>Arrow Keys</kbd> (or click/drag mouse) |
+| **Dash / Dodge** | Phone/tablet: tap and hold the ⚡ DASH button. Laptop: <kbd>Space</kbd> or <kbd>Shift</kbd> (invulnerability frames during dash) |
 | **Aim & Attack** | Autonomous intelligent auto-targeting |
 | **Tactical Pause** | <kbd>Esc</kbd> or <kbd>P</kbd> |
 | **Audio Toggle** | Click the 🔊 button in the top right |

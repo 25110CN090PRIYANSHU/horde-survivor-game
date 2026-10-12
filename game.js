@@ -1132,10 +1132,16 @@
 
         initWindow() {
             const resize = () => {
-                this.canvas.width = window.innerWidth;
-                this.canvas.height = window.innerHeight;
+                const width = Math.max(320, document.documentElement.clientWidth || window.innerWidth);
+                const height = Math.max(320, window.visualViewport?.height || window.innerHeight);
+                this.canvas.width = width;
+                this.canvas.height = height;
+                this.canvas.style.width = `${width}px`;
+                this.canvas.style.height = `${height}px`;
             };
             window.addEventListener('resize', resize);
+            window.visualViewport?.addEventListener('resize', resize);
+            window.addEventListener('orientationchange', () => setTimeout(resize, 120));
             resize();
         }
 
@@ -1186,6 +1192,64 @@
                     this.input.right = false;
                 }
             });
+
+            // Dedicated touch joystick and dash button for phones/tablets.
+            const joystick = document.getElementById('mobileJoystick');
+            const knob = document.getElementById('joystickKnob');
+            const dashButton = document.getElementById('mobileDash');
+            let joystickPointerId = null;
+            const updateJoystick = (e) => {
+                const rect = joystick.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const maxRadius = Math.max(20, rect.width * 0.29);
+                let dx = e.clientX - cx;
+                let dy = e.clientY - cy;
+                const distance = Math.hypot(dx, dy);
+                if (distance > maxRadius) {
+                    dx = dx / distance * maxRadius;
+                    dy = dy / distance * maxRadius;
+                }
+                knob.style.transform = `translate(${dx}px, ${dy}px)`;
+                const threshold = maxRadius * 0.22;
+                this.input.left = dx < -threshold;
+                this.input.right = dx > threshold;
+                this.input.up = dy < -threshold;
+                this.input.down = dy > threshold;
+            };
+            joystick.addEventListener('pointerdown', (e) => {
+                if (this.state !== 'PLAYING') return;
+                e.preventDefault();
+                joystickPointerId = e.pointerId;
+                joystick.setPointerCapture(e.pointerId);
+                window.soundManager.init();
+                updateJoystick(e);
+            });
+            joystick.addEventListener('pointermove', (e) => {
+                if (e.pointerId === joystickPointerId) {
+                    e.preventDefault();
+                    updateJoystick(e);
+                }
+            });
+            const releaseJoystick = (e) => {
+                if (e && e.pointerId !== joystickPointerId) return;
+                joystickPointerId = null;
+                knob.style.transform = 'translate(0, 0)';
+                this.input.up = this.input.down = this.input.left = this.input.right = false;
+            };
+            joystick.addEventListener('pointerup', releaseJoystick);
+            joystick.addEventListener('pointercancel', releaseJoystick);
+            dashButton.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                if (this.state === 'PLAYING') {
+                    this.input.dash = true;
+                    window.soundManager.init();
+                }
+            });
+            const releaseDash = () => { this.input.dash = false; };
+            dashButton.addEventListener('pointerup', releaseDash);
+            dashButton.addEventListener('pointercancel', releaseDash);
+            dashButton.addEventListener('lostpointercapture', releaseDash);
         }
 
         handlePointer(e) {
